@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using NEManager.Core.Injection;
+using NEManager.Core.SystemTools;
 
 namespace NEManager.App.Views;
 
@@ -21,19 +21,29 @@ public partial class InjectorPage : UserControl, IRefreshable
 
     private void RefreshProcessList()
     {
-        try
-        {
-            var procs = Process.GetProcesses()
-                .Where(p => !string.IsNullOrEmpty(p.ProcessName))
-                .OrderBy(p => p.ProcessName)
-                .ToList();
-            ProcessGrid.ItemsSource = procs;
-            ResultBox.Text = $"已加载 {procs.Count} 个进程。双击选择或手动输入 PID。";
-        }
-        catch (Exception ex)
-        {
-            ResultBox.Text = $"加载进程失败：{ex.Message}";
-        }
+        SetStatus("正在枚举进程…");
+        _ = System.Threading.Tasks.Task.Run(() => ProcessManager.Enumerate())
+            .ContinueWith(t =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        var items = t.Result;
+                        ProcessGrid.ItemsSource = items;
+                        ResultBox.Text = $"已加载 {items.Count} 个进程。双击选择或手动输入 PID。";
+                    }
+                    catch (System.Exception ex)
+                    {
+                        ResultBox.Text = $"加载进程失败：{ex.Message}";
+                    }
+                });
+            });
+    }
+
+    private void SetStatus(string msg)
+    {
+        if (Application.Current.MainWindow is MainWindow main) main.SetStatus(msg);
     }
 
     private void RefreshProcs_Click(object sender, RoutedEventArgs e) => RefreshProcessList();
@@ -50,10 +60,10 @@ public partial class InjectorPage : UserControl, IRefreshable
 
     private void ProcessGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        if (ProcessGrid.SelectedItem is Process p)
+        if (ProcessGrid.SelectedItem is ProcessManager.ProcessItem p)
         {
             PidBox.Text = p.Id.ToString();
-            ResultBox.Text = $"已选中：{p.ProcessName} (PID {p.Id})";
+            ResultBox.Text = $"已选中：{p.Name} (PID {p.Id})";
         }
     }
 
@@ -64,7 +74,7 @@ public partial class InjectorPage : UserControl, IRefreshable
             ResultBox.Text = "请输入有效的目标 PID";
             return;
         }
-        if (string.IsNullOrWhiteSpace(DllPathBox.Text) || !File.Exists(DllPathBox.Text))
+        if (string.IsNullOrWhiteSpace(DllPathBox.Text) || !System.IO.File.Exists(DllPathBox.Text))
         {
             ResultBox.Text = "请选择一个存在的 DLL 文件";
             return;
@@ -85,7 +95,7 @@ public partial class InjectorPage : UserControl, IRefreshable
                 ? $"[OK] {result.Message}"
                 : $"[FAIL] {result.Message}";
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             ResultBox.Text = $"[ERR] {ex.Message}";
         }

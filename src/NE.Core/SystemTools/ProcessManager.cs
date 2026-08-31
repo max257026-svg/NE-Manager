@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -39,8 +39,9 @@ public static class ProcessManager
 
     public sealed class ModuleItem
     {
+
         public string Name { get; set; } = string.Empty;
-        public string Path { get; set; } = string.Empty;
+                public string Path { get; set; } = string.Empty;
         public IntPtr BaseAddress { get; set; }
         public uint Size { get; set; }
 
@@ -503,3 +504,5 @@ public static class ProcessManager
         }
     }
 }
+
+

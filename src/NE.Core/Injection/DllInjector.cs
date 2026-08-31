@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 namespace NEManager.Core.Injection;
@@ -22,48 +22,51 @@ public static class DllInjector
     private const uint MEM_RELEASE = 0x8000;
     private const uint PAGE_READWRITE = 0x04;
     private const uint PAGE_EXECUTE_READ = 0x20;
-    private const uint INFINITE = 0xFFFFFFFF;
 
     public record InjectResult(bool Success, string Message);
 
     public static InjectResult Inject(int pid, string dllPath)
     {
+        if (!File.Exists(dllPath)) return new InjectResult(false, $"DLL 不存在：{dllPath}");
+
+        var hProc = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
+        if (hProc == IntPtr.Zero)
+            return new InjectResult(false, $"OpenProcess 失败（PID {pid}）。需要管理员权限或 SeDebug 特权。");
+
+        IntPtr remoteMem = IntPtr.Zero;
         try
         {
-            if (!File.Exists(dllPath)) return new InjectResult(false, $"DLL 不存在：{dllPath}");
+            var pathBytes = Encoding.Unicode.GetBytes(dllPath);
+            remoteMem = VirtualAllocEx(hProc, IntPtr.Zero, (uint)pathBytes.Length + 2,
+                MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+            if (remoteMem == IntPtr.Zero)
+                return new InjectResult(false, "VirtualAllocEx 失败。");
 
-            var hProc = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
-            if (hProc == IntPtr.Zero)
-                return new InjectResult(false, $"OpenProcess 失败（PID {pid}）。需要管理员权限或目标进程权限。");
+            if (!WriteProcessMemory(hProc, remoteMem, pathBytes, (uint)pathBytes.Length, out _))
+                return new InjectResult(false, "WriteProcessMemory 失败。");
 
-            try
-            {
-                // 把 DLL 路径（Unicode）写入目标进程
-                var pathBytes = Encoding.Unicode.GetBytes(dllPath);
-                var remoteMem = VirtualAllocEx(hProc, IntPtr.Zero, (uint)pathBytes.Length + 2, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-                if (remoteMem == IntPtr.Zero) return new InjectResult(false, "VirtualAllocEx 失败。");
+            var hKernel = GetModuleHandleW("kernel32.dll");
+            if (hKernel == IntPtr.Zero) return new InjectResult(false, "GetModuleHandle 失败。");
+            var loadLibrary = GetProcAddress(hKernel, "LoadLibraryW");
+            if (loadLibrary == IntPtr.Zero) return new InjectResult(false, "GetProcAddress(LoadLibraryW) 失败。");
 
-                if (!WriteProcessMemory(hProc, remoteMem, pathBytes, (uint)pathBytes.Length, out _))
-                    return new InjectResult(false, "WriteProcessMemory 失败。");
+            var hThread = CreateRemoteThread(hProc, IntPtr.Zero, 0, loadLibrary, remoteMem, 0, out _);
+            if (hThread == IntPtr.Zero) return new InjectResult(false, "CreateRemoteThread 失败。");
 
-                // 获取 LoadLibraryW 地址
-                var hKernel = GetModuleHandleW("kernel32.dll");
-                if (hKernel == IntPtr.Zero) return new InjectResult(false, "GetModuleHandle 失败。");
-                var loadLibrary = GetProcAddress(hKernel, "LoadLibraryW");
-                if (loadLibrary == IntPtr.Zero) return new InjectResult(false, "GetProcAddress(LoadLibraryW) 失败。");
+            WaitForSingleObject(hThread, 5000);
+            CloseHandle(hThread);
 
-                // 创建远程线程调用 LoadLibraryW(dllPath)
-                var hThread = CreateRemoteThread(hProc, IntPtr.Zero, 0, loadLibrary, remoteMem, 0, out _);
-                if (hThread == IntPtr.Zero) return new InjectResult(false, "CreateRemoteThread 失败。");
-
-                WaitForSingleObject(hThread, 5000);
-                VirtualFreeEx(hProc, remoteMem, 0, MEM_RELEASE);
-                CloseHandle(hThread);
-
-                return new InjectResult(true, $"注入成功！PID {pid} 已加载 {Path.GetFileName(dllPath)}");
-            }
-            finally { CloseHandle(hProc); }
+            return new InjectResult(true, $"注入成功！PID {pid} 已加载 {Path.GetFileName(dllPath)}");
         }
-        catch (Exception ex) { return new InjectResult(false, ex.Message); }
+        catch (Exception ex)
+        {
+            return new InjectResult(false, ex.Message);
+        }
+        finally
+        {
+            // 失败也必须释放远程内存 + 关闭句柄，防泄漏
+            if (remoteMem != IntPtr.Zero) VirtualFreeEx(hProc, remoteMem, 0, MEM_RELEASE);
+            CloseHandle(hProc);
+        }
     }
 }

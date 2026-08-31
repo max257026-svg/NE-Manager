@@ -1,4 +1,4 @@
-<UserControl x:Class="NEManager.App.Views.InjectorPage"
+﻿<UserControl x:Class="NEManager.App.Views.InjectorPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{StaticResource BgDeepBrush}">
@@ -71,8 +71,11 @@
                       MouseDoubleClick="ProcessGrid_MouseDoubleClick">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="PID" Binding="{Binding Id}" Width="70"/>
+                    <DataGridTextColumn Header="进程名" Binding="{Binding Name}" Width="180"/>
+                    <DataGridTextColumn Header="父进程" Binding="{Binding ParentId}" Width="70"/>
+                    <DataGridTextColumn Header="用户" Binding="{Binding UserName}" Width="150"/>
                     <DataGridTextColumn Header="进程名" Binding="{Binding ProcessName}" Width="160"/>
-                    <DataGridTextColumn Header="主窗口" Binding="{Binding MainWindowTitle}" Width="*"/>
+                    <DataGridTextColumn Header="路径" Binding="{Binding Path}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
 
@@ -83,3 +86,4 @@
         </Grid>
     </Grid>
 </UserControl>
+

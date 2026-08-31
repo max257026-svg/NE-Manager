@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using NEManager.Core.Memory;
 
@@ -30,9 +30,9 @@ public partial class MemoryEditorPage : UserControl, IRefreshable
     {
         try
         {
-            var processes = System.Diagnostics.Process.GetProcesses()
-                .OrderBy(p => p.ProcessName)
-                .Select(p => new { ProcessName = $"{p.ProcessName} (PID: {p.Id})", ProcessId = p.Id })
+            var processes = NEManager.Core.SystemTools.ProcessManager.Enumerate()
+                .OrderBy(p => p.Name)
+                .Select(p => new { ProcessName = $"{p.Name} (PID: {p.Id})", ProcessId = p.Id })
                 .ToList();
             ProcessSelector.ItemsSource = processes;
             ProcessSelector.DisplayMemberPath = "ProcessName";
@@ -206,3 +206,5 @@ public partial class MemoryEditorPage : UserControl, IRefreshable
         }
     }
 }
+
+
