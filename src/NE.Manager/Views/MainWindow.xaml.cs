@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using NEManager.Core.Risk;
@@ -52,6 +52,32 @@ public partial class MainWindow : Window
         }
 
         Navigate("Files"); // 先让 UI 出现
+            // 启动后后台检查更新（不阻塞 UI）
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await System.Threading.Tasks.Task.Delay(2000); // 等 UI 稳定
+                    var (hasUpdate, tag, url, _) = await NEManager.Core.SystemTools.UpdateService.CheckAsync();
+                    if (hasUpdate && !string.IsNullOrEmpty(url))
+                    {
+                        _ = Dispatcher.InvokeAsync(() =>
+                        {
+                            string msg = "发现新版本 " + tag
+                                + "（当前 v" + NEManager.Core.SystemTools.UpdateService.CurrentVersion + "）。\n\n"
+                                + "是否跳转到 GitHub 下载？";
+                            var result = System.Windows.MessageBox.Show(
+                                msg,
+                                "NE Manager 有更新",
+                                System.Windows.MessageBoxButton.YesNo,
+                                System.Windows.MessageBoxImage.Information);
+                            if (result == System.Windows.MessageBoxResult.Yes)
+                                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+                        });
+                    }
+                }
+                catch { /* 更新失败不影响主流程 */ }
+            });
 
         try
         {
@@ -626,3 +652,5 @@ public interface IRefreshable
     void OnEnter();
     void OnLeave();
 }
+
+

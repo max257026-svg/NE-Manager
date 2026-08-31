@@ -1,5 +1,32 @@
 ﻿# Changelog
 
+## v3.0 · 2026-08-31
+
+**类型**：功能发布（大版本升级）
+
+### 新增功能
+
+- 自动更新检查 — 启动后后台查询 GitHub Releases API（零第三方依赖，HttpClient + System.Text.Json），发现新版本时弹提示并一键跳转下载；支持下载进度回调
+- 侧边栏版本分组升级 — "v2.0 新功能" 重命名为 "v3.0 新功能"，包含 Dashboard + Injector
+
+### 技术债务
+
+- [UpdateService] 修复单文件发布下 IL3000 警告，Assembly.Location 改为 AppContext.BaseDirectory + 文件名
+
+### Build
+
+- Version: 3.0.0.0
+- 0 警告 / 0 错误
+- Self-contained single-file EXE · win-x64 · 66 MB
+- ZIP 64 MB
+
+### 下载
+
+https://github.com/max257026-svg/NE-Manager/releases/tag/v3.0
+
+---
+# Changelog
+
 ## v2.1.1 · 2026-08-31
 
 **类型**：Hotfix
@@ -74,3 +101,4 @@ https://github.com/max257026-svg/NE-Manager/releases/tag/v2.1
 ### 下载
 
 https://github.com/max257026-svg/NE-Manager/releases/tag/v2.0
+

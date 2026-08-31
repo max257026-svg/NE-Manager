@@ -1,4 +1,4 @@
-<Window x:Class="NEManager.App.Views.MainWindow"
+﻿<Window x:Class="NEManager.App.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:NEManager.App.Views"
@@ -33,7 +33,7 @@
                     </Border>
                     <TextBlock Text="NE 管理器" FontSize="15" FontWeight="SemiBold"
                                Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="v2.0" FontSize="11" Foreground="{StaticResource AccentBrush}"
+                    <TextBlock Text="v3.0" FontSize="11" Foreground="{StaticResource AccentBrush}"
                                FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,2,0,0"/>
                     <Border Background="{StaticResource BgElevatedBrush}" CornerRadius="3"
                             Padding="6,2" Margin="12,0,0,0" VerticalAlignment="Center">
@@ -166,7 +166,7 @@
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled" Padding="0,8">
                         <StackPanel x:Name="NavPanel">
-                            <TextBlock Text="v2.0 新功能" FontSize="11" FontWeight="SemiBold"
+                            <TextBlock Text="v3.0 新功能" FontSize="11" FontWeight="SemiBold"
                                        Foreground="{StaticResource AccentBrush}"
                                        Margin="16,6,0,6"/>
                             <Button x:Name="NavDashboard" Style="{StaticResource NavButton}"
@@ -522,3 +522,4 @@
         </Border>
     </Grid>
 </Window>
+
