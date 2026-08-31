@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace NEManager.Core.SystemTools;
 
@@ -9,17 +9,16 @@ namespace NEManager.Core.SystemTools;
 public class SystemMonitorService : IDisposable
 {
     private readonly PerformanceCounter _cpuCounter;
-    private readonly PerformanceCounter _memoryCounter;
+    private readonly PerformanceCounter _memCommittedCounter;
+    private readonly PerformanceCounter _memAvailableCounter;
     private readonly Timer _timer;
 
     public double CpuUsage { get; private set; }
-    public double MemoryUsage { get; private set; }
+    public double MemoryUsage { get; private set; }   // 已用百分比 0..100
     public double MemoryUsedMb { get; private set; }
     public double MemoryTotalMb { get; private set; }
 
-    /// <summary>最近 60 帧 CPU 采样（每帧 1s，最多回看 1 分钟）。</summary>
     public double[] CpuHistory { get; private set; } = new double[60];
-    /// <summary>最近 60 帧内存采样。</summary>
     public double[] MemoryHistory { get; private set; } = new double[60];
 
     private int _historyIdx;
@@ -29,11 +28,13 @@ public class SystemMonitorService : IDisposable
     public SystemMonitorService(int intervalMs = 1000)
     {
         _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        _memoryCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
+        _memCommittedCounter = new PerformanceCounter("Memory", "Committed Bytes");
+        _memAvailableCounter = new PerformanceCounter("Memory", "Available MBytes");
 
-        // 首次调用返回 0，必须先 Read 一次让计数器就绪
+        // 热启动：必须先 Read 一次计数器才能返回有效值
         _cpuCounter.NextValue();
-        _memoryCounter.NextValue();
+        _memCommittedCounter.NextValue();
+        _memAvailableCounter.NextValue();
 
         _timer = new Timer(_ => TakeSample(), null, intervalMs, intervalMs);
     }
@@ -42,13 +43,15 @@ public class SystemMonitorService : IDisposable
     {
         try
         {
-            CpuUsage = _cpuCounter.NextValue();
-            MemoryUsage = _memoryCounter.NextValue();
+            CpuUsage = Math.Clamp(_cpuCounter.NextValue(), 0, 100);
 
-            var totalGb = GC.GetTotalMemory(false); // 不准，只给 UI 个趋势
-            var gcUsedMb = totalGb / 1024.0 / 1024.0;
+            double committedMb = _memCommittedCounter.NextValue() / 1024.0 / 1024.0;
+            double availableMb = _memAvailableCounter.NextValue();
+            double totalMb = committedMb + availableMb;
+            MemoryUsedMb = committedMb;
+            MemoryTotalMb = totalMb;
+            MemoryUsage = totalMb > 0 ? Math.Clamp(committedMb / totalMb * 100.0, 0, 100) : 0;
 
-            // 历史环形缓冲
             CpuHistory[_historyIdx] = CpuUsage;
             MemoryHistory[_historyIdx] = MemoryUsage;
             _historyIdx = (_historyIdx + 1) % CpuHistory.Length;
@@ -58,7 +61,7 @@ public class SystemMonitorService : IDisposable
         catch { /* 后台计数器偶发异常忽略 */ }
     }
 
-    /// <summary>获取环形缓冲中"最旧在前"的完整历史快照（给折线图绑定用）。</summary>
+    /// <summary>环形缓冲最旧→最新顺序。</summary>
     public (double[] cpu, double[] mem) GetHistoryOrdered()
     {
         int n = CpuHistory.Length;
@@ -77,6 +80,7 @@ public class SystemMonitorService : IDisposable
     {
         _timer.Dispose();
         _cpuCounter.Dispose();
-        _memoryCounter.Dispose();
+        _memCommittedCounter.Dispose();
+        _memAvailableCounter.Dispose();
     }
 }

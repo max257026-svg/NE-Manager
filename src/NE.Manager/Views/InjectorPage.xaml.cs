@@ -1,4 +1,5 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
@@ -8,9 +9,14 @@ namespace NEManager.App.Views;
 
 public partial class InjectorPage : UserControl, IRefreshable
 {
+    private bool _firstLoad = true;
+
     public InjectorPage() => InitializeComponent();
 
-    public void OnEnter() => RefreshProcessList();
+    public void OnEnter()
+    {
+        if (_firstLoad) { RefreshProcessList(); _firstLoad = false; }
+    }
     public void OnLeave() { }
 
     private void RefreshProcessList()
@@ -51,7 +57,7 @@ public partial class InjectorPage : UserControl, IRefreshable
         }
     }
 
-    private void Inject_Click(object sender, RoutedEventArgs e)
+    private async void Inject_Click(object sender, RoutedEventArgs e)
     {
         if (!int.TryParse(PidBox.Text.Trim(), out var pid) || pid <= 0)
         {
@@ -72,17 +78,20 @@ public partial class InjectorPage : UserControl, IRefreshable
         InjectBtn.IsEnabled = false;
         ResultBox.Text = "注入中...";
 
-        _ = System.Threading.Tasks.Task.Run(() => DllInjector.Inject(pid, DllPathBox.Text))
-            .ContinueWith(t =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    InjectBtn.IsEnabled = true;
-                    var r = t.Result;
-                    ResultBox.Text = r.Success
-                        ? $"[OK] {r.Message}"
-                        : $"[FAIL] {r.Message}";
-                });
-            });
+        try
+        {
+            var result = await System.Threading.Tasks.Task.Run(() => DllInjector.Inject(pid, DllPathBox.Text));
+            ResultBox.Text = result.Success
+                ? $"[OK] {result.Message}"
+                : $"[FAIL] {result.Message}";
+        }
+        catch (Exception ex)
+        {
+            ResultBox.Text = $"[ERR] {ex.Message}";
+        }
+        finally
+        {
+            InjectBtn.IsEnabled = true;
+        }
     }
 }
