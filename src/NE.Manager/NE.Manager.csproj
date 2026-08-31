@@ -11,10 +11,10 @@
     <RootNamespace>NEManager.App</RootNamespace>
     <AssemblyName>NE.Manager</AssemblyName>
     <NoWarn>CS1591;CA1416;CS0649;CS0169</NoWarn>
-    <Version>3.0.0.0</Version>
+    <Version>3.1.0.0</Version>
     <Company>NewEra Studio</Company>
     <Product>NE 管理器</Product>
-    <InformationalVersion>3.0.0</InformationalVersion>
+    <InformationalVersion>3.1.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +37,7 @@
   </ItemGroup>
 
 </Project>
+
 
 
 

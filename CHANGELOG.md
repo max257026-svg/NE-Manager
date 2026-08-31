@@ -1,4 +1,34 @@
-﻿# Changelog
+﻿## v3.1 · 2026-08-31
+
+**类型**：功能发布 + 视觉升级
+
+### 全新视觉 — Cyberpunk Neon 主题
+
+- 深紫黑底 #0D0B1F + 霓虹青绿 #00E5FF + 霓虹粉 #FF2DD4
+- Header 三色渐变 + NeonAccentGradient 新画刷 + SidebarGlow 径向光
+- 全套调色板替换（Accent/Bg/Text/Border 22 个颜色资源）
+
+### 新增功能（3 个页面 + 2 个 Service）
+
+- 系统信息总览（SystemInfoPage） — 一键采集 OS / 硬件 / 已装软件 / 驱动 / 网络；支持 Markdown 导出
+- 剪贴板历史（ClipboardPage + ClipboardMonitor） — DispatcherTimer 轮询监听，100 条历史上限，支持复制回、编辑重写
+- 进程关系树（ProcessTreePage） — TreeView 按 ParentId 递归可视化进程父子关系
+
+### 侧边栏
+
+- 新增 "v3.1 新功能" 分组（替换原 v3.0）
+
+### Build
+
+- Version: 3.1.0.0 · 0 警告 / 0 错误
+- Self-contained single-file EXE · win-x64 · 66 MB
+
+### 下载
+
+https://github.com/max257026-svg/NE-Manager/releases/tag/v3.1
+
+---
+# Changelog
 
 ## v3.0 · 2026-08-31
 
@@ -101,4 +131,5 @@ https://github.com/max257026-svg/NE-Manager/releases/tag/v2.1
 ### 下载
 
 https://github.com/max257026-svg/NE-Manager/releases/tag/v2.0
+
 

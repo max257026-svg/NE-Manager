@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="NEManager.App.Views.ProcessTreePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgBrush}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{StaticResource BgPanelBrush}"
+                CornerRadius="8" Padding="12,8" Margin="0,0,0,12"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="进程关系树" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="刷新" Style="{StaticResource ToolButton}" Click="Refresh_Click"/>
+            </Grid>
+        </Border>
+        <TreeView x:Name="ProcTree" Grid.Row="1"
+                  Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                  BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="8" Height="8" Margin="0,0,6,0" Fill="{StaticResource AccentBrush}"/>
+                        <TextBlock Text="{Binding Label}" FontSize="13" FontWeight="Medium" Foreground="{StaticResource TextBrush}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

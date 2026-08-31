@@ -33,7 +33,7 @@
                     </Border>
                     <TextBlock Text="NE 管理器" FontSize="15" FontWeight="SemiBold"
                                Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
-                    <TextBlock Text="v3.0" FontSize="11" Foreground="{StaticResource AccentBrush}"
+                    <TextBlock Text="v3.1" FontSize="11" Foreground="{StaticResource AccentBrush}"
                                FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,2,0,0"/>
                     <Border Background="{StaticResource BgElevatedBrush}" CornerRadius="3"
                             Padding="6,2" Margin="12,0,0,0" VerticalAlignment="Center">
@@ -166,7 +166,7 @@
                     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled" Padding="0,8">
                         <StackPanel x:Name="NavPanel">
-                            <TextBlock Text="v3.0 新功能" FontSize="11" FontWeight="SemiBold"
+                            <TextBlock Text="v3.1 新功能" FontSize="11" FontWeight="SemiBold"
                                        Foreground="{StaticResource AccentBrush}"
                                        Margin="16,6,0,6"/>
                             <Button x:Name="NavDashboard" Style="{StaticResource NavButton}"
@@ -291,6 +291,22 @@
                                     <TextBlock Text="&#xE943;" FontFamily="{StaticResource IconFont}"
                                                FontSize="15" Width="22" VerticalAlignment="Center"/>
                                     <TextBlock Text="DLL 注入器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavSystemInfo" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="SystemInfo">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE944;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="系统信息" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavClipboard" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Clipboard">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE945;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="剪贴板历史" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                             <Button x:Name="NavArchive" Style="{StaticResource NavButton}"
@@ -522,4 +538,7 @@
         </Border>
     </Grid>
 </Window>
+
+
+
 

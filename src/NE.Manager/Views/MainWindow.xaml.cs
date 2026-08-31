@@ -190,7 +190,10 @@ public partial class MainWindow : Window
                     "DataFormat" => new DataFormatPage(),
                     "LinuxFS" => new LinuxFileSystemPage(),
                     "MacFS" => new MacFileSystemPage(),
-                    "Log" => new LogPage(),
+                                                            "Log" => new LogPage(),
+                    "SystemInfo" => new SystemInfoPage(),
+                    "Clipboard" => new ClipboardPage(),
+                    "ProcessTree" => new ProcessTreePage(),
                     "Startup" => new StartupPage(),
                     "About" => new AboutPage(),
                     _ => new FilesPage()
@@ -652,5 +655,7 @@ public interface IRefreshable
     void OnEnter();
     void OnLeave();
 }
+
+
 
 
