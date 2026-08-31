@@ -1,0 +1,76 @@
+<Window x:Class="NEManager.App.Views.RegistrySearchDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="注册表搜索" Height="620" Width="960" MinHeight="420" MinWidth="680"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgDeepBrush}"
+        FontFamily="{StaticResource UIFont}"
+        Foreground="{StaticResource TextBrush}">
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="搜索：" VerticalAlignment="Center"
+                           Style="{StaticResource StatusText}" Margin="0,0,8,0"/>
+                <TextBox Grid.Column="1" x:Name="PatternBox" VerticalContentAlignment="Center" Height="32"
+                         KeyDown="PatternBox_KeyDown"/>
+                <Button Grid.Column="2" Content="开始搜索" Style="{StaticResource AccentButton}"
+                        Click="Search_Click" Margin="8,0,0,0" MinWidth="100"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="SearchKeysBox" Content="键名" IsChecked="True" Margin="0,0,12,0"/>
+                    <CheckBox x:Name="SearchValueNamesBox" Content="值名称" IsChecked="True" Margin="0,0,12,0"/>
+                    <CheckBox x:Name="SearchValueDataBox" Content="值数据" IsChecked="True" Margin="0,0,12,0"/>
+                    <CheckBox x:Name="UseRegexBox" Content="正则表达式" Margin="0,0,12,0"/>
+                    <CheckBox x:Name="MatchCaseBox" Content="区分大小写" Margin="0,0,12,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="起始路径：" VerticalAlignment="Center"
+                               Style="{StaticResource StatusText}" Margin="0,0,6,0"/>
+                    <TextBlock x:Name="RootPathText" VerticalAlignment="Center"
+                               Style="{StaticResource MonoText}"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Padding="8">
+            <DataGrid x:Name="ResultGrid" MouseDoubleClick="ResultGrid_DoubleClick">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="键路径" Binding="{Binding KeyPath}" Width="*"/>
+                    <DataGridTextColumn Header="值名称" Binding="{Binding ValueName}" Width="180"/>
+                    <DataGridTextColumn Header="匹配内容" Binding="{Binding MatchedText}" Width="220"/>
+                    <DataGridTextColumn Header="数据" Binding="{Binding Data}" Width="220"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock x:Name="ResultStatus" Style="{StaticResource StatusText}" Text="输入关键词后开始搜索"/>
+            <ProgressBar x:Name="SearchProgress" Width="200" Height="4" HorizontalAlignment="Center"
+                         IsIndeterminate="True" Visibility="Collapsed"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="跳转到选中项" Style="{StaticResource ToolButton}" Click="Jump_Click"/>
+                <Button Content="关闭" Style="{StaticResource ToolButton}" Click="Close_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

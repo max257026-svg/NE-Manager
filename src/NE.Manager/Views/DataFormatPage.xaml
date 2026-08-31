@@ -1,0 +1,96 @@
+<UserControl x:Class="NEManager.App.Views.DataFormatPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="输入格式:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <ComboBox x:Name="InputFormatSelector" Width="120">
+                        <ComboBoxItem Content="JSON" IsSelected="True"/>
+                        <ComboBoxItem Content="XML"/>
+                        <ComboBoxItem Content="YAML"/>
+                        <ComboBoxItem Content="CSV"/>
+                    </ComboBox>
+                    <TextBlock Text="输出格式:" VerticalAlignment="Center" Margin="20,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <ComboBox x:Name="OutputFormatSelector" Width="120">
+                        <ComboBoxItem Content="JSON" IsSelected="True"/>
+                        <ComboBoxItem Content="XML"/>
+                        <ComboBoxItem Content="YAML"/>
+                        <ComboBoxItem Content="CSV"/>
+                    </ComboBox>
+                    <Button Content="转换" Style="{StaticResource AccentButton}" Click="Convert_Click" Margin="20,0,0,0"/>
+                    <Button Content="验证" Style="{StaticResource ToolButton}" Click="Validate_Click" Margin="10,0,0,0"/>
+                    <Button Content="格式化" Style="{StaticResource ToolButton}" Click="Format_Click" Margin="10,0,0,0"/>
+                    <Button Content="清空" Style="{StaticResource ToolButton}" Click="Clear_Click" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="打开文件" Style="{StaticResource ToolButton}" Click="OpenFile_Click"/>
+                    <Button Content="保存结果" Style="{StaticResource ToolButton}" Click="SaveFile_Click" Margin="10,0,0,0"/>
+                    <TextBlock x:Name="EncodingText" VerticalAlignment="Center" Margin="20,0,0,0" 
+                               Foreground="{StaticResource TextMutedBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 编辑区 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 输入区 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanel}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="输入" FontWeight="SemiBold" Margin="10,8,10,8"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBox x:Name="InputBox" Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                             Foreground="{StaticResource TextBrush}" Background="{StaticResource BgPanelBrush}"
+                             BorderThickness="0" AcceptsReturn="True" AcceptsTab="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" Padding="10"/>
+                </Grid>
+            </Border>
+
+            <!-- 输出区 -->
+            <Border Grid.Column="2" Style="{StaticResource CardPanel}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="输出" FontWeight="SemiBold" Margin="10,8,10,8"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBox x:Name="OutputBox" Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                             Foreground="{StaticResource TextBrush}" Background="{StaticResource BgPanelBrush}"
+                             BorderThickness="0" AcceptsReturn="True" IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" Padding="10"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Text="就绪"/>
+                <TextBlock x:Name="InfoText" Style="{StaticResource StatusText}" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

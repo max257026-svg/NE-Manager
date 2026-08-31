@@ -1,0 +1,128 @@
+<UserControl x:Class="NEManager.App.Views.MemoryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- 进程选择 + 扫描控制 -->
+            <RowDefinition Height="*"/>       <!-- 结果列表 + 地址簿 -->
+            <RowDefinition Height="Auto"/>   <!-- 状态栏 -->
+        </Grid.RowDefinitions>
+
+        <!-- 顶部控制栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Padding="10" Margin="0,0,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 进程选择 -->
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="目标进程:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="ProcessCombo" Grid.Column="1" Grid.Row="0" SelectionChanged="ProcessCombo_Changed" MinHeight="26"/>
+                <Button Grid.Column="2" Grid.Row="0" Content="刷新" Style="{StaticResource IconButton}" Padding="8,2" Click="RefreshProcesses_Click" Margin="4,0,0,0"/>
+                <Button x:Name="AttachBtn" Grid.Column="3" Grid.Row="0" Content="附加" Style="{StaticResource AccentButton}" Padding="10,2" Click="Attach_Click" Margin="8,0,0,0" IsEnabled="False"/>
+
+                <!-- 值类型 -->
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="类型:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,10,6,0"/>
+                <ComboBox x:Name="ValueTypeCombo" Grid.Column="1" Grid.Row="1" Margin="0,10,0,0">
+                    <ComboBoxItem Content="Int32 (4字节)" Tag="Int32" IsSelected="True"/>
+                    <ComboBoxItem Content="Int64 (8字节)" Tag="Int64"/>
+                    <ComboBoxItem Content="Float (4字节)" Tag="Float"/>
+                    <ComboBoxItem Content="Double (8字节)" Tag="Double"/>
+                    <ComboBoxItem Content="String" Tag="String"/>
+                    <ComboBoxItem Content="ByteArray (hex)" Tag="ByteArray"/>
+                </ComboBox>
+
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="值:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="12,10,6,0"/>
+                <TextBox x:Name="ScanValueBox" Grid.Column="3" Grid.Row="1" Margin="0,10,0,0"/>
+                <Button Grid.Column="4" Grid.Row="1" Content="扫描" Style="{StaticResource AccentButton}" Padding="14,2" Click="Scan_Click" Margin="10,10,0,0"/>
+                <Button Grid.Column="5" Grid.Row="1" Content="下一次扫描" Style="{StaticResource ToolButton}" Padding="12,2" Click="Rescan_Click" Margin="8,10,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 主内容：左右分栏 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：扫描结果 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanel}" Padding="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="扫描结果" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" Margin="4,4"/>
+                    <DataGrid x:Name="ResultGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Extended" MouseDoubleClick="ResultGrid_DoubleClick">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="地址" Binding="{Binding AddressStr}" Width="140"/>
+                            <DataGridTextColumn Header="值" Binding="{Binding Display}" Width="*"/>
+                            <DataGridTextColumn Header="大小" Binding="{Binding Size}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- 分隔 -->
+            <Border Grid.Column="1" Background="{StaticResource BorderBrush}"/>
+
+            <!-- 右：地址簿（收藏+冻结） -->
+            <Border Grid.Column="2" Style="{StaticResource CardPanel}" Padding="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4,4">
+                        <TextBlock Text="地址簿" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="FrozenCountText" Text="" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <DataGrid x:Name="AddressGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False"
+                              IsReadOnly="False" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="冻结" Binding="{Binding IsFrozen}" Width="50"/>
+                            <DataGridTextColumn Header="描述" Binding="{Binding Description}" Width="120"/>
+                            <DataGridTextColumn Header="地址" Binding="{Binding AddressStr}" Width="130"/>
+                            <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="60"/>
+                            <DataGridTextColumn Header="当前值" Binding="{Binding CurrentValue}" Width="80"/>
+                            <DataGridTextColumn Header="冻结值" Binding="{Binding FrozenValue}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,8,4,4">
+                        <Button Content="添加" Style="{StaticResource ToolButton}" Padding="10,4" Click="AddManual_Click"/>
+                        <Button Content="编辑值" Style="{StaticResource ToolButton}" Padding="10,4" Click="EditValue_Click" Margin="6,0,0,0"/>
+                        <Button Content="移除" Style="{StaticResource DangerButton}" Padding="10,4" Click="RemoveAddress_Click" Margin="6,0,0,0"/>
+                        <Button x:Name="FreezeToggleBtn" Content="开始冻结" Style="{StaticResource AccentButton}" Padding="10,4" Click="ToggleFreeze_Click" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Background="{StaticResource BgElevatedBrush}" Padding="10,4" CornerRadius="4" Margin="0,8,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="StatusText" Grid.Column="0" Text="未附加" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                <TextBlock x:Name="ResultCountText" Grid.Column="2" Text="" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

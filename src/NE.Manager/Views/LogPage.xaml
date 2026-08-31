@@ -1,0 +1,89 @@
+<UserControl x:Class="NEManager.App.Views.LogPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}"
+             FontFamily="{StaticResource UIFont}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══════════ 工具栏 ══════════ -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="日志与回滚中心" FontSize="15" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <Button x:Name="ClearLogsBtn" Content="清空日志" Style="{StaticResource ToolButton}" Padding="10,5" Click="ClearLogs_Click"/>
+                <Button x:Name="OpenBackupBtn" Content="打开备份目录" Style="{StaticResource ToolButton}" Padding="10,5" Click="OpenBackup_Click" Margin="6,0,0,0"/>
+                <TextBlock x:Name="SummaryText" Foreground="{StaticResource TextSecondaryBrush}"
+                           VerticalAlignment="Center" Margin="16,0,0,0" FontSize="12"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ══════════ Tab 内容 ══════════ -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="10">
+            <TabControl Background="Transparent">
+                <TabItem Header="操作日志">
+                    <DataGrid x:Name="LogGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                              Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                              RowBackground="{StaticResource BgPanelBrush}" AlternatingRowBackground="{StaticResource BgElevatedBrush}"
+                              BorderBrush="{StaticResource BorderBrush}" GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="时间" Binding="{Binding TimeText}" Width="150"/>
+                            <DataGridTextColumn Header="级别" Binding="{Binding LevelText}" Width="70"/>
+                            <DataGridTextColumn Header="操作" Binding="{Binding Operation}" Width="160"/>
+                            <DataGridTextColumn Header="目标" Binding="{Binding Target}" Width="220"/>
+                            <DataGridTextColumn Header="详情" Binding="{Binding Detail}" Width="*"/>
+                            <DataGridTextColumn Header="结果" Binding="{Binding ResultText}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="运行时错误">
+                    <DataGrid x:Name="ErrorGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                              Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                              RowBackground="{StaticResource BgPanelBrush}" AlternatingRowBackground="{StaticResource BgElevatedBrush}"
+                              BorderBrush="{StaticResource BorderBrush}" GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="序号" Binding="{Binding Id}" Width="60"/>
+                            <DataGridTextColumn Header="时间" Binding="{Binding Time}" Width="80"/>
+                            <DataGridTextColumn Header="来源" Binding="{Binding Source}" Width="160"/>
+                            <DataGridTextColumn Header="信息" Binding="{Binding Message}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="备份与回滚">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid x:Name="BackupGrid" AutoGenerateColumns="False" IsReadOnly="True"
+                                  Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                                  RowBackground="{StaticResource BgPanelBrush}" AlternatingRowBackground="{StaticResource BgElevatedBrush}"
+                                  BorderBrush="{StaticResource BorderBrush}" GridLinesVisibility="Horizontal">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="90"/>
+                                <DataGridTextColumn Header="时间" Binding="{Binding CreatedAtText}" Width="150"/>
+                                <DataGridTextColumn Header="操作" Binding="{Binding Operation}" Width="140"/>
+                                <DataGridTextColumn Header="类型" Binding="{Binding KindText}" Width="110"/>
+                                <DataGridTextColumn Header="原始路径" Binding="{Binding OriginalPath}" Width="*"/>
+                                <DataGridTextColumn Header="状态" Binding="{Binding StateText}" Width="80"/>
+                                <DataGridTemplateColumn Header="操作" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="回滚" Click="Rollback_Click" Tag="{Binding}"
+                                                    Style="{StaticResource ToolButton}" Padding="6,2" IsEnabled="{Binding CanRollback}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock Grid.Row="1" Text="提示：回滚将把备份内容恢复到原始路径。系统文件回滚可能需要管理员权限，部分被占用文件需在下次重启时替换。"
+                                   Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Border>
+    </Grid>
+</UserControl>

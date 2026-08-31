@@ -1,0 +1,74 @@
+<UserControl x:Class="NEManager.App.Views.ProcessPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}"
+             FontFamily="{StaticResource UIFont}">
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══════════ 工具栏 ══════════ -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="刷新" Style="{StaticResource ToolButton}" Padding="10,5" Click="Refresh_Click"/>
+                    <Button Content="结束进程" Style="{StaticResource DangerButton}" Padding="10,5" Click="Kill_Click"/>
+                    <Button Content="结束进程树" Style="{StaticResource DangerButton}" Padding="10,5" Click="KillTree_Click" Margin="4,0,0,0"/>
+                    <Separator Width="12" Background="Transparent"/>
+                    <Button Content="挂起" Style="{StaticResource ToolButton}" Padding="10,5" Click="Suspend_Click"/>
+                    <Button Content="恢复" Style="{StaticResource ToolButton}" Padding="10,5" Click="Resume_Click" Margin="4,0,0,0"/>
+                    <Separator Width="12" Background="Transparent"/>
+                    <Button Content="查看模块" Style="{StaticResource ToolButton}" Padding="10,5" Click="Modules_Click"/>
+                    <Button Content="转储内存" Style="{StaticResource ToolButton}" Padding="10,5" Click="Dump_Click" Margin="4,0,0,0"/>
+                    <Button Content="查找占用" Style="{StaticResource ToolButton}" Padding="10,5" Click="FindLocker_Click" Margin="4,0,0,0"/>
+                    <Separator Width="12" Background="Transparent"/>
+                    <CheckBox x:Name="AutoRefreshBox" Content="自动刷新 (3秒)" VerticalAlignment="Center"
+                              Checked="AutoRefresh_Changed" Unchecked="AutoRefresh_Changed"/>
+                    <Button Content="导出清单" Style="{StaticResource ToolButton}" Padding="10,5" Click="Export_Click" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="筛选：" VerticalAlignment="Center" Style="{StaticResource StatusText}" Margin="0,0,6,0"/>
+                    <TextBox x:Name="FilterBox" Width="180" VerticalContentAlignment="Center"
+                             TextChanged="FilterBox_TextChanged"/>
+                    <TextBlock x:Name="CountText" Style="{StaticResource StatusText}" Margin="12,0,0,0"
+                               Foreground="{StaticResource InfoBrush}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══════════ 进程列表 ══════════ -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="8">
+            <DataGrid x:Name="ProcessGrid">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="结束进程" Click="Kill_Click"/>
+                        <MenuItem Header="结束进程树" Click="KillTree_Click"/>
+                        <MenuItem Header="挂起进程" Click="Suspend_Click"/>
+                        <MenuItem Header="恢复进程" Click="Resume_Click"/>
+                        <Separator/>
+                        <MenuItem Header="查看加载的模块 (DLL)" Click="Modules_Click"/>
+                        <MenuItem Header="转储进程内存" Click="Dump_Click"/>
+                        <Separator/>
+                        <MenuItem Header="在资源管理器中打开文件位置" Click="OpenLocation_Click"/>
+                        <MenuItem Header="复制命令行" Click="CopyCommandLine_Click"/>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="进程名" Binding="{Binding Name}" Width="180"/>
+                    <DataGridTextColumn Header="PID" Binding="{Binding Id}" Width="70"/>
+                    <DataGridTextColumn Header="状态" Binding="{Binding StatusText}" Width="70"/>
+                    <DataGridTextColumn Header="用户" Binding="{Binding UserName}" Width="160"/>
+                    <DataGridTextColumn Header="提权" Binding="{Binding ElevatedText}" Width="50"/>
+                    <DataGridTextColumn Header="内存" Binding="{Binding WorkingSetText}" Width="90"/>
+                    <DataGridTextColumn Header="线程" Binding="{Binding ThreadCount}" Width="55"/>
+                    <DataGridTextColumn Header="句柄" Binding="{Binding HandleCount}" Width="60"/>
+                    <DataGridTextColumn Header="可执行路径" Binding="{Binding Path}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

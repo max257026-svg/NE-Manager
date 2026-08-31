@@ -1,0 +1,63 @@
+<UserControl x:Class="NEManager.App.Views.HexEditorPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="打开文件" Style="{StaticResource ToolButton}" Click="Open_Click"/>
+                <Button Content="保存" Style="{StaticResource ToolButton}" Click="Save_Click"/>
+                <Button Content="另存为" Style="{StaticResource ToolButton}" Click="SaveAs_Click"/>
+                <Separator Width="10" Background="Transparent"/>
+                <Button Content="撤销" Style="{StaticResource ToolButton}" Click="Undo_Click"/>
+                <Button Content="重做" Style="{StaticResource ToolButton}" Click="Redo_Click"/>
+                <Separator Width="10" Background="Transparent"/>
+                <Button Content="查找" Style="{StaticResource ToolButton}" Click="Find_Click"/>
+                <Button Content="跳转" Style="{StaticResource ToolButton}" Click="GoTo_Click"/>
+                <Separator Width="10" Background="Transparent"/>
+                <TextBlock Text="偏移:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                <TextBlock x:Name="OffsetText" Text="00000000" FontFamily="{StaticResource MonoFont}"
+                           Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- HEX 显示区 -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="0">
+            <ScrollViewer x:Name="HexScrollViewer" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto">
+                <Grid x:Name="HexGrid" Background="{StaticResource BgPanelBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Name="AddressColumn" FontFamily="{StaticResource MonoFont}"
+                               FontSize="13" Foreground="{StaticResource TextMutedBrush}"
+                               Margin="10,10,10,10" LineHeight="20"/>
+                    <TextBlock Grid.Column="1" x:Name="HexColumn" FontFamily="{StaticResource MonoFont}"
+                               FontSize="13" Foreground="{StaticResource TextBrush}"
+                               Margin="0,10,10,10" LineHeight="20"/>
+                    <TextBlock Grid.Column="2" x:Name="AsciiColumn" FontFamily="{StaticResource MonoFont}"
+                               FontSize="13" Foreground="{StaticResource TextSecondaryBrush}"
+                               Margin="10,10,10,10" LineHeight="20"/>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Text="未加载文件"/>
+                <TextBlock x:Name="SizeText" Style="{StaticResource StatusText}" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

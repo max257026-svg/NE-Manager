@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>NESmoke</AssemblyName>
+    <NoWarn>CS1591;CA1416</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NE.Manager\NE.Manager.csproj" />
+    <ProjectReference Include="..\NE.Core\NE.Core.csproj" />
+    <ProjectReference Include="..\NE.Native\NE.Native.csproj" />
+  </ItemGroup>
+
+</Project>

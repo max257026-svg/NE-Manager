@@ -1,0 +1,39 @@
+<UserControl x:Class="NEManager.App.Views.StartupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部工具栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="🔄 刷新" Style="{StaticResource ToolButton}" Padding="10,5" Click="Refresh_Click"/>
+                <Button Content="➕ 新增启动项" Style="{StaticResource ToolButton}" Padding="10,5" Click="Add_Click" Margin="6,0,0,0"/>
+                <Button Content="❌ 删除选中" Style="{StaticResource DangerButton}" Padding="10,5" Click="Delete_Click" Margin="6,0,0,0"/>
+                <Button Content="▶ 禁用/启用" Style="{StaticResource ToolButton}" Padding="10,5" Click="Disable_Click" Margin="6,0,0,0"/>
+                <TextBlock x:Name="CountText" Text="" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 主数据 -->
+        <DataGrid x:Name="ItemGrid" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+                  SelectionMode="Extended"
+                  Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                  RowBackground="{StaticResource BgPanelBrush}" AlternatingRowBackground="{StaticResource BgElevatedBrush}"
+                  BorderBrush="{StaticResource BorderBrush}" GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="160"/>
+                <DataGridTextColumn Header="命令/路径" Binding="{Binding Command}" Width="*"/>
+                <DataGridTextColumn Header="来源" Binding="{Binding Location}" Width="140"/>
+                <DataGridTextColumn Header="注册表键" Binding="{Binding RegistryPath}" Width="200"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <TextBlock x:Name="StatusText" Grid.Row="2" Margin="0,8,0,0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+    </Grid>
+</UserControl>

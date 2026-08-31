@@ -1,0 +1,47 @@
+<UserControl x:Class="NEManager.App.Views.ArchivePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="打开归档" Style="{StaticResource ToolButton}" Click="Open_Click"/>
+                <TextBlock x:Name="ArchiveName" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                <Separator Width="20" Background="Transparent"/>
+                <Button Content="解压选中" Style="{StaticResource ToolButton}" Click="ExtractSelected_Click"/>
+                <Button Content="全部解压" Style="{StaticResource ToolButton}" Click="ExtractAll_Click"/>
+                <Button Content="查看" Style="{StaticResource ToolButton}" Click="View_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 文件列表 -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="10">
+            <DataGrid x:Name="ArchiveGrid" AutoGenerateColumns="False" SelectionMode="Extended">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="大小" Binding="{Binding SizeText}" Width="100"/>
+                    <DataGridTextColumn Header="压缩后" Binding="{Binding CompressedSizeText}" Width="100"/>
+                    <DataGridTextColumn Header="修改时间" Binding="{Binding LastModified, StringFormat='yyyy-MM-dd HH:mm'}" Width="140"/>
+                    <DataGridTextColumn Header="类型" Binding="{Binding EntryType}" Width="80"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Text="未打开归档"/>
+                <TextBlock x:Name="EntryCountText" Style="{StaticResource StatusText}" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

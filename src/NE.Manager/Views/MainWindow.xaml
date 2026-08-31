@@ -1,0 +1,524 @@
+<Window x:Class="NEManager.App.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:NEManager.App.Views"
+        Title="NE 管理器 · NewEra Studio"
+        Height="860" Width="1400"
+        MinHeight="620" MinWidth="1080"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip"
+        Background="{StaticResource BgDeepBrush}"
+        FontFamily="{StaticResource UIFont}"
+        Foreground="{StaticResource TextBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══════════ 标题栏 ══════════ -->
+        <Border x:Name="TitleBar" Grid.Row="0" Background="{StaticResource HeaderGradient}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                MouseLeftButtonDown="TitleBar_DragMove">
+            <Grid Margin="16,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="{StaticResource AccentBrush}" CornerRadius="5"
+                            Width="26" Height="26" Margin="0,0,10,0">
+                        <TextBlock Text="NE" Foreground="White" FontWeight="Bold" FontSize="12"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="NE 管理器" FontSize="15" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                    <TextBlock Text="v2.0" FontSize="11" Foreground="{StaticResource AccentBrush}"
+                               FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,2,0,0"/>
+                    <Border Background="{StaticResource BgElevatedBrush}" CornerRadius="3"
+                            Padding="6,2" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="NewEra Studio" FontSize="10.5"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </Border>
+                </StackPanel>
+
+                <Grid HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 业务操作按钮组 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <!-- 安全模式指示器 -->
+                        <Border x:Name="SafeModeBadge" Background="{StaticResource WarningBrush}"
+                                CornerRadius="3" Padding="8,3" Margin="0,0,8,0" Cursor="Hand"
+                                MouseLeftButtonUp="SafeModeBadge_Click" ToolTip="点击切换安全模式">
+                            <TextBlock x:Name="SafeModeText" Text="普通模式"
+                                       FontSize="11.5" FontWeight="SemiBold" Foreground="#FF1A1A1A"/>
+                        </Border>
+
+                        <!-- 管理员状态 -->
+                        <Border x:Name="ElevationBadge" Background="{StaticResource BgElevatedBrush}"
+                                CornerRadius="3" Padding="8,3" Margin="0,0,8,0" Cursor="Hand"
+                                MouseLeftButtonUp="ElevationBadge_Click" ToolTip="点击以管理员身份重启">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xEA18;" FontFamily="{StaticResource IconFont}"
+                                           FontSize="11" VerticalAlignment="Center" Margin="0,0,5,0"
+                                           Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock x:Name="ElevationText" Text="标准用户"
+                                           FontSize="11.5" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="&#xE713;" Style="{StaticResource IconButton}"
+                                ToolTip="设置" Click="Settings_Click"/>
+                    </StackPanel>
+
+                    <!-- 窗口控制按钮组（Win11 Fluent） -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0">
+                        <Button x:Name="MinBtn" Content="&#xE921;"
+                                Width="46" Height="46" BorderThickness="0" Background="Transparent"
+                                Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"
+                                FontFamily="{StaticResource IconFont}" Cursor="Hand"
+                                Click="MinBtn_Click" ToolTip="最小化">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="MinBd" Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="MinBd" Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button x:Name="MaxBtn" Content="&#xE922;"
+                                Width="46" Height="46" BorderThickness="0" Background="Transparent"
+                                Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"
+                                FontFamily="{StaticResource IconFont}" Cursor="Hand"
+                                Click="MaxBtn_Click" ToolTip="最大化">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="MaxBd" Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="MaxBd" Property="Background" Value="{StaticResource BgHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <Button x:Name="CloseBtn" Content="&#xE8BB;"
+                                Width="46" Height="46" BorderThickness="0" Background="Transparent"
+                                Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"
+                                FontFamily="{StaticResource IconFont}" Cursor="Hand"
+                                Click="CloseBtn_Click" ToolTip="关闭">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="CloseBd" Background="{TemplateBinding Background}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="CloseBd" Property="Background" Value="{StaticResource DangerBrush}"/>
+                                            <Setter TargetName="CloseBd" Property="Opacity" Value="1"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- ══════════ 标签页栏 ══════════ -->
+        <Border Grid.Row="0" Background="{StaticResource BgDarkBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                Height="36" VerticalAlignment="Bottom" Margin="0,0,0,-36">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="TabBar" Orientation="Horizontal" Margin="8,0"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ══════════ 主体 ══════════ -->
+        <Grid Grid.Row="1" Margin="0,36,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧导航 -->
+            <Border Grid.Column="0" Background="{StaticResource BgDarkBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled" Padding="0,8">
+                        <StackPanel x:Name="NavPanel">
+                            <TextBlock Text="v2.0 新功能" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       Margin="16,6,0,6"/>
+                            <Button x:Name="NavDashboard" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Dashboard">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE7F4;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="实时仪表盘" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="文件与系统" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="16,10,0,6"/>
+                            <Button x:Name="NavFiles" Style="{StaticResource NavButton}"
+                                    Tag="Active" Click="Nav_Click" CommandParameter="Files">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="文件管理" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavSecurity" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Security">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xEA18;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="权限与提权" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavRegistry" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Registry">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE82D;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="注册表编辑器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="系统工具" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="16,16,0,6"/>
+                            <Button x:Name="NavProcess" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Process">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9D9;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="进程管理器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavService" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Service">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE770;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="服务管理器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavDisk" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Disk">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xEDA2;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="磁盘与卷" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavWmi" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Wmi">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE756;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="WMI 控制台" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavStartup" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Startup">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xEDD2;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="启动项管理" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="逆向与安全" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="16,16,0,6"/>
+                            <Button x:Name="NavPe" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Pe">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE7C3;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="PE 文件分析" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavHexEditor" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="HexEditor">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8A5;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="HEX 编辑器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavTextEditor" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="TextEditor">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8A2;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="文本编辑器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavMemory" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="MemoryEditor">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9D9;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="内存修改" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavInjector" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Injector">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE943;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="DLL 注入器" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavArchive" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Archive">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8B7;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="归档浏览" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavDiff" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Diff">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8A9;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Diff 对比" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavNetwork" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Network">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE774;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="网络文件" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="开发工具" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="16,16,0,6"/>
+                            <Button x:Name="NavScript" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Script">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE943;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="脚本引擎" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavToolbox" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Toolbox">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE770;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="工具箱" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavDiskSector" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="DiskSector">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xEDA2;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="磁盘扇区编辑" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavBatchRename" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="BatchRename">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE8AC;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="批量重命名" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavDataFormat" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="DataFormat">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE9F5;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="数据格式化" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavLinuxFS" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="LinuxFS">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE7F8;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Linux 文件系统" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavMacFS" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="MacFS">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE7F8;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="macOS 文件系统" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <TextBlock Text="其他" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="16,16,0,6"/>
+                            <Button x:Name="NavLog" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="Log">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE81C;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="日志与回滚" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="NavAbout" Style="{StaticResource NavButton}"
+                                    Click="Nav_Click" CommandParameter="About">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE946;" FontFamily="{StaticResource IconFont}"
+                                               FontSize="15" Width="22" VerticalAlignment="Center"/>
+                                    <TextBlock Text="关于" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 底部：快速提权 -->
+                    <Border Grid.Row="1" Padding="12" BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="0,1,0,0">
+                        <Button x:Name="ElevateButton" Content="以管理员身份重启"
+                                Style="{StaticResource AccentButton}" Height="34"
+                                Click="Elevate_Click" HorizontalAlignment="Stretch"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- 内容区 -->
+            <ContentControl Grid.Column="1" x:Name="PageHost"
+                            Background="{StaticResource BgDeepBrush}"/>
+
+            <!-- 右侧工具箱面板 -->
+            <Border Grid.Column="2" x:Name="ToolboxPanel" Width="260"
+                    Background="{StaticResource BgDarkBrush}"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1,0,0,0"
+                    Visibility="Collapsed">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="快速工具" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextBrush}" Margin="0,0,0,10"/>
+
+                        <!-- 进制转换 -->
+                        <Expander Header="进制转换" IsExpanded="True" Margin="0,0,0,8">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBox x:Name="QuickConverterInput" Tag="QuickConverter"
+                                         TextChanged="QuickConverter_TextChanged"
+                                         VerticalContentAlignment="Center" Padding="8,6"/>
+                                <TextBlock x:Name="QuickConverterResult" TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11.5" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 哈希计算 -->
+                        <Expander Header="哈希计算" IsExpanded="False" Margin="0,0,0,8">
+                            <StackPanel Margin="0,8,0,0">
+                                <Button Content="选择文件" Style="{StaticResource ToolButton}"
+                                        Click="QuickHash_Click" HorizontalAlignment="Stretch"/>
+                                <TextBlock x:Name="QuickHashResult" TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11.5" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 正则测试 -->
+                        <Expander Header="正则测试" IsExpanded="False" Margin="0,0,0,8">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBox x:Name="QuickRegexPattern" Tag="QuickRegex"
+                                         VerticalContentAlignment="Center" Padding="8,6"
+                                         Margin="0,0,0,6"/>
+                                <TextBox x:Name="QuickRegexInput" Tag="QuickRegexInput"
+                                         Height="60" TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         VerticalContentAlignment="Top" Padding="8,6"
+                                         Margin="0,0,0,6"/>
+                                <Button Content="测试" Style="{StaticResource ToolButton}"
+                                        Click="QuickRegexTest_Click" HorizontalAlignment="Stretch"/>
+                                <TextBlock x:Name="QuickRegexResult" TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11.5" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 编码工具 -->
+                        <Expander Header="编码转换" IsExpanded="False" Margin="0,0,0,8">
+                            <StackPanel Margin="0,8,0,0">
+                                <TextBox x:Name="QuickEncodingInput" Tag="QuickEncoding"
+                                         Height="50" TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         VerticalContentAlignment="Top" Padding="8,6"
+                                         Margin="0,0,0,6"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                    <Button Content="Base64 编码" Style="{StaticResource ToolButton}"
+                                            Click="QuickBase64Encode_Click" Margin="0,0,4,0"/>
+                                    <Button Content="Base64 解码" Style="{StaticResource ToolButton}"
+                                            Click="QuickBase64Decode_Click"/>
+                                </StackPanel>
+                                <TextBlock x:Name="QuickEncodingResult" TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11.5"/>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <!-- ══════════ 状态栏 ══════════ -->
+        <Border Grid.Row="2" Background="{StaticResource BgDarkBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0">
+            <Grid Margin="14,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border x:Name="ErrorBadge" Visibility="Collapsed" Background="{StaticResource DangerBrush}"
+                            CornerRadius="3" Padding="8,2" Margin="0,0,10,0" Cursor="Hand"
+                            MouseLeftButtonUp="ErrorBadge_Click" ToolTip="查看运行时错误日志">
+                        <TextBlock x:Name="ErrorCountText" Text="0" FontSize="11.5" FontWeight="SemiBold"
+                                   Foreground="White"/>
+                    </Border>
+                    <TextBlock x:Name="StatusBarText" Style="{StaticResource StatusText}"
+                               Text="就绪"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="IntegrityText" Style="{StaticResource StatusText}"
+                               Text="完整性：—" Margin="0,0,16,0"/>
+                    <TextBlock x:Name="PrivilegeText" Style="{StaticResource StatusText}"
+                               Text="特权：—" Margin="0,0,16,0"/>
+                    <TextBlock Style="{StaticResource StatusText}" Foreground="{StaticResource TextMutedBrush}"
+                               Text="NewEra Studio"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

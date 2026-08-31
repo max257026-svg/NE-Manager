@@ -1,0 +1,223 @@
+<UserControl x:Class="NEManager.App.Views.SecurityPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}"
+             FontFamily="{StaticResource UIFont}">
+
+    <Grid Margin="14">
+        <TabControl>
+            <!-- ══════════ 特权管理 ══════════ -->
+            <TabItem Header="Windows 特权 (SePrivilege)">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="特权管理"/>
+                            <TextBlock Style="{StaticResource SubTitle}">
+                                特权 (Privilege) 是 Windows 里的「能力开关」，决定进程能否执行诸如接管所有权、
+                                调试任意进程、绕过文件权限检查等操作。启用后 NE 管理器才能获得访问系统底层的能力。
+                            </TextBlock>
+                            <TextBlock x:Name="PrivilegeSummary" Style="{StaticResource SubTitle}"
+                                       Margin="0,8,0,0" Foreground="{StaticResource InfoBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="8">
+                        <DataGrid x:Name="PrivilegeGrid" SelectionMode="Single"
+                                  ItemsSource="{Binding Privileges}">
+                            <DataGrid.Columns>
+                                <DataGridCheckBoxColumn Header="启用" Binding="{Binding Enabled, Mode=TwoWay}" Width="56"/>
+                                <DataGridTextColumn Header="特权名" Binding="{Binding Name}" Width="230"/>
+                                <DataGridTextColumn Header="显示名" Binding="{Binding DisplayName}" Width="180"/>
+                                <DataGridTextColumn Header="说明" Binding="{Binding Description}" Width="*"/>
+                                <DataGridTextColumn Header="默认" Binding="{Binding EnabledByDefault}" Width="56"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="一键启用关键特权" Style="{StaticResource AccentButton}"
+                                    Click="EnableEssential_Click"/>
+                            <Button Content="启用选中" Style="{StaticResource ToolButton}" Click="EnableSelected_Click"/>
+                            <Button Content="禁用选中" Style="{StaticResource ToolButton}" Click="DisableSelected_Click"/>
+                            <Button Content="刷新" Style="{StaticResource ToolButton}" Click="RefreshPrivileges_Click"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- ══════════ TrustedInstaller 接管 ══════════ -->
+            <TabItem Header="TrustedInstaller 接管">
+                <ScrollViewer Margin="0,10,0,0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="什么是 TrustedInstaller"/>
+                                <TextBlock Style="{StaticResource SubTitle}" TextWrapping="Wrap">
+                                    Windows 中最核心的系统文件（C:\Windows 下的 dll、exe、驱动）归
+                                    NT SERVICE\TrustedInstaller 所有，即使管理员也无法直接修改——这就是 Windows 版的
+                                    「没有 Root 权限」。
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource SubTitle}" TextWrapping="Wrap" Margin="0,8,0,0">
+                                    NE 管理器提供两条路径绕过它：
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource SubTitle}" TextWrapping="Wrap" Margin="0,4,0,0">
+                                    ① 启用 SeTakeOwnershipPrivilege，把文件所有者改为 Administrators；
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource SubTitle}" TextWrapping="Wrap" Margin="0,4,0,0">
+                                    ② 复制 TrustedInstaller 服务进程的令牌，以它的身份启动新进程。
+                                </TextBlock>
+                                <TextBlock x:Name="TiStatusText" Style="{StaticResource SubTitle}"
+                                           Margin="0,10,0,0" Foreground="{StaticResource WarningBrush}"
+                                           FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="以 TrustedInstaller 身份启动进程"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,0,0,10" TextWrapping="Wrap">
+                                    启动一个以 NT SERVICE\TrustedInstaller 令牌运行的命令行窗口。
+                                    在该窗口内执行的任何文件操作都拥有系统最高权限。
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="启动 TrustedInstaller 命令行" Style="{StaticResource DangerButton}"
+                                            Click="LaunchTiCmd_Click"/>
+                                    <Button Content="启动 TrustedInstaller 版 NE 管理器"
+                                            Style="{StaticResource DangerButton}" Click="LaunchTiSelf_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="接管文件 / 目录所有权"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,0,0,10" TextWrapping="Wrap">
+                                    输入要接管的路径，NE 管理器会把所有者改为 Administrators 并授予完全控制权限。
+                                    原权限会自动备份，可在「日志与回滚」中恢复。
+                                </TextBlock>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" x:Name="TakeOwnPath" VerticalContentAlignment="Center"
+                                             Text="C:\Windows\System32"/>
+                                    <Button Grid.Column="1" Content="浏览…" Style="{StaticResource ToolButton}"
+                                            Click="BrowseTakeOwn_Click" Margin="6,0,0,0"/>
+                                    <Button Grid.Column="2" Content="接管所有权" Style="{StaticResource DangerButton}"
+                                            Click="TakeOwnership_Click" Margin="6,0,0,0"/>
+                                </Grid>
+                                <CheckBox x:Name="TakeOwnRecursive" Content="递归接管整个目录树（⚠️ 耗时较长）"
+                                          Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource SectionTitle}" Text="还原与修复"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,0,0,10" TextWrapping="Wrap">
+                                    改完系统文件后，把所有者还原给 TrustedInstaller；或在系统目录权限损坏时重置继承。
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="还原为 TrustedInstaller 所有者" Style="{StaticResource ToolButton}"
+                                            Click="RestoreTi_Click"/>
+                                    <Button Content="重置为继承权限" Style="{StaticResource ToolButton}"
+                                            Click="ResetInheritance_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ══════════ 权限模板 ══════════ -->
+            <TabItem Header="权限模板与批量应用">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="SDDL 权限模板"/>
+                            <TextBlock Style="{StaticResource SubTitle}" TextWrapping="Wrap">
+                                从任意文件/目录读取安全描述符作为模板（SDDL 格式），然后一键批量应用到整个目录树。
+                                常用于批量修复被破坏的权限，或统一部署权限策略。
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TemplateSourcePath" VerticalContentAlignment="Center"
+                                         ToolTip="作为模板来源的文件或目录"/>
+                                <Button Grid.Column="1" Content="读取模板" Style="{StaticResource ToolButton}"
+                                        Click="ReadTemplate_Click" Margin="6,0,0,0"/>
+                                <Button Grid.Column="2" Content="浏览…" Style="{StaticResource ToolButton}"
+                                        Click="BrowseTemplateSource_Click" Margin="6,0,0,0"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="1" Text="模板 SDDL：" Style="{StaticResource StatusText}"
+                                       Margin="0,0,0,4"/>
+                            <TextBox Grid.Row="2" x:Name="TemplateSddl" IsReadOnly="True"
+                                     FontFamily="{StaticResource MonoFont}" FontSize="12"
+                                     TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                     Background="{StaticResource BgDarkBrush}"/>
+
+                            <Grid Grid.Row="3" Margin="0,12,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TemplateTargetPath" VerticalContentAlignment="Center"
+                                         ToolTip="要应用模板的目标目录"/>
+                                <Button Grid.Column="1" Content="浏览…" Style="{StaticResource ToolButton}"
+                                        Click="BrowseTemplateTarget_Click" Margin="6,0,0,0"/>
+                                <Button Grid.Column="2" Content="应用到目录树" Style="{StaticResource DangerButton}"
+                                        Click="ApplyTemplate_Click" Margin="6,0,0,0"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionTitle}" Text="常用权限模板"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <Button Content="Administrators 完全控制" Style="{StaticResource ToolButton}"
+                                        Click="PresetAdminFull_Click"/>
+                                <Button Content="Everyone 只读" Style="{StaticResource ToolButton}"
+                                        Click="PresetEveryoneRead_Click"/>
+                                <Button Content="继承父级（重置）" Style="{StaticResource ToolButton}"
+                                        Click="PresetInherit_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,69 @@
+<UserControl x:Class="NEManager.App.Views.WmiPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}"
+             FontFamily="{StaticResource UIFont}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══════════ 工具栏 ══════════ -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="WMI / WQL 控制台" FontSize="15" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextBrush}" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <Button x:Name="ExecuteBtn" Content="执行查询" Style="{StaticResource AccentButton}" Padding="10,5" Click="Execute_Click"/>
+                <Button x:Name="ClassesBtn" Content="浏览类" Style="{StaticResource ToolButton}" Padding="10,5" Click="Classes_Click" Margin="6,0,0,0"/>
+                <Button x:Name="ReportBtn" Content="生成系统报告" Style="{StaticResource ToolButton}" Padding="10,5" Click="Report_Click" Margin="6,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ══════════ 查询参数 ══════════ -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="命名空间" Style="{StaticResource StatusText}"
+                           VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBox x:Name="NamespaceBox" Grid.Column="1" Text="root\cimv2"
+                         VerticalContentAlignment="Center" Style="{StaticResource ModernTextBox}"/>
+                <TextBlock Grid.Column="2" Text="预设" Style="{StaticResource StatusText}"
+                           VerticalAlignment="Center" Margin="12,0,6,0"/>
+                <ComboBox x:Name="PresetCombo" Grid.Column="3" SelectionChanged="PresetCombo_SelectionChanged"/>
+            </Grid>
+        </Border>
+
+        <!-- ══════════ WQL 编辑器 + 结果 ══════════ -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="WqlBox" Grid.Row="0" Height="56" Margin="0,0,0,10"
+                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                         FontFamily="{StaticResource MonoFont}" FontSize="12"
+                         Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                         BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                         Text="SELECT Name, ProcessId, WorkingSetSize FROM Win32_Process"/>
+
+                <DataGrid x:Name="ResultGrid" Grid.Row="1" AutoGenerateColumns="True" IsReadOnly="True"
+                          Background="{StaticResource BgPanelBrush}" Foreground="{StaticResource TextBrush}"
+                          RowBackground="{StaticResource BgPanelBrush}" AlternatingRowBackground="{StaticResource BgElevatedBrush}"
+                          BorderBrush="{StaticResource BorderBrush}" GridLinesVisibility="Horizontal"/>
+            </Grid>
+        </Border>
+
+        <TextBlock x:Name="StatusText" Grid.Row="3" Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="12" Margin="0,8,0,0"/>
+    </Grid>
+</UserControl>

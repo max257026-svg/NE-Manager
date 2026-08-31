@@ -1,0 +1,90 @@
+<Window x:Class="NEManager.App.Views.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="设置" Height="520" Width="640"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BgDeepBrush}"
+        FontFamily="{StaticResource UIFont}"
+        Foreground="{StaticResource TextBrush}">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Style="{StaticResource SectionTitle}" Text="安全模式"/>
+
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,14">
+                    <StackPanel>
+                        <RadioButton x:Name="ModeNormal" GroupName="SafeMode" Margin="0,6" Checked="Mode_Changed">
+                            <StackPanel>
+                                <TextBlock Text="普通用户模式" FontWeight="SemiBold" FontSize="13.5"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,2,0,0">
+                                    只做浏览和读取。所有系统修改、权限接管、磁盘底层操作均被禁用。
+                                </TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="ModeAdvanced" GroupName="SafeMode" Margin="0,6" Checked="Mode_Changed">
+                            <StackPanel>
+                                <TextBlock Text="高级模式" FontWeight="SemiBold" FontSize="13.5"
+                                           Foreground="{StaticResource InfoBrush}"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,2,0,0">
+                                    解锁高危操作：接管所有权、修改系统文件、编辑注册表、管理服务、创建卷快照。
+                                    每次操作仍会弹出确认并自动备份。
+                                </TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="ModeExpert" GroupName="SafeMode" Margin="0,6" Checked="Mode_Changed">
+                            <StackPanel>
+                                <TextBlock Text="专家模式" FontWeight="SemiBold" FontSize="13.5"
+                                           Foreground="{StaticResource DangerBrush}"/>
+                                <TextBlock Style="{StaticResource SubTitle}" Margin="0,2,0,0">
+                                    解锁全部能力，包括 BCD 启动项修改、系统文件替换、驱动操作。
+                                    ⚠️ 操作失误会导致系统无法启动，请确认你已备份重要数据。
+                                </TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Style="{StaticResource SectionTitle}" Text="说明"/>
+
+                <Border Style="{StaticResource CardPanel}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,0,0,8">
+                            NE 管理器的所有高危操作都遵循统一的风险框架：
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,2">
+                            · 操作前弹出显式警告，说明后果
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,2">
+                            · 自动备份原始数据（文件 / 注册表 / 权限）
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,2">
+                            · 完整记录操作日志
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,2">
+                            · 提供一键回滚入口
+                        </TextBlock>
+                        <Separator Margin="0,10"/>
+                        <TextBlock Style="{StaticResource SubTitle}" Margin="0,2">
+                            多数系统级操作还需要以管理员身份运行本程序。
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="打开备份目录" Style="{StaticResource ToolButton}" Click="OpenBackup_Click"/>
+            <Button Content="确定" Style="{StaticResource AccentButton}" Click="Ok_Click" MinWidth="90" Margin="8,0,0,0"/>
+            <Button Content="取消" Style="{StaticResource ToolButton}" Click="Cancel_Click" MinWidth="90"/>
+        </StackPanel>
+    </Grid>
+</Window>

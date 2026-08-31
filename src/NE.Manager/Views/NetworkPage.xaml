@@ -1,0 +1,57 @@
+<UserControl x:Class="NEManager.App.Views.NetworkPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 连接配置 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="协议:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <ComboBox x:Name="ProtocolSelector" Width="100" SelectionChanged="Protocol_Changed">
+                        <ComboBoxItem Content="FTP" IsSelected="True"/>
+                        <ComboBoxItem Content="WebDAV"/>
+                    </ComboBox>
+                    <TextBlock Text="服务器:" VerticalAlignment="Center" Margin="16,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox x:Name="ServerInput" Width="250" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="用户名:" VerticalAlignment="Center" Margin="16,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox x:Name="UsernameInput" Width="120" VerticalContentAlignment="Center"/>
+                    <TextBlock Text="密码:" VerticalAlignment="Center" Margin="16,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <PasswordBox x:Name="PasswordInput" Width="120" VerticalContentAlignment="Center"/>
+                    <Button Content="连接" Style="{StaticResource AccentButton}" Click="Connect_Click" Margin="16,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 文件列表 -->
+        <Border Grid.Row="1" Style="{StaticResource CardPanel}" Padding="10">
+            <DataGrid x:Name="FileGrid" AutoGenerateColumns="False" SelectionMode="Extended">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="100"/>
+                    <DataGridTextColumn Header="大小" Binding="{Binding Size}" Width="100"/>
+                    <DataGridTextColumn Header="修改时间" Binding="{Binding ModifiedTime}" Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- 操作栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="下载" Style="{StaticResource ToolButton}" Click="Download_Click"/>
+                <Button Content="上传" Style="{StaticResource ToolButton}" Click="Upload_Click"/>
+                <Button Content="删除" Style="{StaticResource ToolButton}" Click="Delete_Click"/>
+                <Button Content="新建目录" Style="{StaticResource ToolButton}" Click="CreateDir_Click"/>
+                <Button Content="刷新" Style="{StaticResource ToolButton}" Click="Refresh_Click"/>
+                <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

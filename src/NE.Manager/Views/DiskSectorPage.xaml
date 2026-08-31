@@ -1,0 +1,89 @@
+<UserControl x:Class="NEManager.App.Views.DiskSectorPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 工具栏 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="磁盘:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <ComboBox x:Name="DiskSelector" Width="300" SelectionChanged="DiskSelector_SelectionChanged"/>
+                    <Button Content="刷新" Style="{StaticResource ToolButton}" Click="Refresh_Click" Margin="10,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="扇区号:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBox x:Name="SectorNumberBox" Width="120" Text="0"/>
+                    <TextBlock Text="扇区大小:" VerticalAlignment="Center" Margin="20,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <ComboBox x:Name="SectorSizeSelector" Width="100">
+                        <ComboBoxItem Content="512" IsSelected="True"/>
+                        <ComboBoxItem Content="1024"/>
+                        <ComboBoxItem Content="2048"/>
+                        <ComboBoxItem Content="4096"/>
+                    </ComboBox>
+                    <Button Content="读取" Style="{StaticResource AccentButton}" Click="ReadSector_Click" Margin="10,0,0,0"/>
+                    <Button Content="批量读取" Style="{StaticResource ToolButton}" Click="BatchRead_Click" Margin="10,0,0,0"/>
+                    <Button Content="搜索" Style="{StaticResource ToolButton}" Click="Search_Click" Margin="10,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 内容区 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- HEX 视图 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanel}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="HEX 视图" FontWeight="SemiBold" Margin="10,8,10,8"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBox x:Name="HexView" Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                             Foreground="{StaticResource TextBrush}" Background="{StaticResource BgPanelBrush}"
+                             BorderThickness="0" IsReadOnly="True" AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" Padding="10"/>
+                </Grid>
+            </Border>
+
+            <!-- ASCII 视图 -->
+            <Border Grid.Column="2" Style="{StaticResource CardPanel}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="ASCII 视图" FontWeight="SemiBold" Margin="10,8,10,8"
+                               Foreground="{StaticResource TextBrush}"/>
+                    <TextBox x:Name="AsciiView" Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="12"
+                             Foreground="{StaticResource TextBrush}" Background="{StaticResource BgPanelBrush}"
+                             BorderThickness="0" IsReadOnly="True" AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" Padding="10"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Text="就绪"/>
+                <TextBlock x:Name="DiskInfoText" Style="{StaticResource StatusText}" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

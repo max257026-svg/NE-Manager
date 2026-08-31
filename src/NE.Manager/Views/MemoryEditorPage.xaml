@@ -1,0 +1,101 @@
+<UserControl x:Class="NEManager.App.Views.MemoryEditorPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgDeepBrush}">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 进程选择区 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,10" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="进程:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="{StaticResource TextSecondaryBrush}"/>
+                <ComboBox x:Name="ProcessSelector" Width="300" DisplayMemberPath="ProcessName"/>
+                <Button Content="刷新" Style="{StaticResource ToolButton}" Click="Refresh_Click" Margin="6,0,0,0"/>
+                <Button Content="附加" Style="{StaticResource AccentButton}" Click="Attach_Click" Margin="6,0,0,0"/>
+                <Button Content="分离" Style="{StaticResource ToolButton}" Click="Detach_Click" Margin="6,0,0,0"/>
+                <TextBlock x:Name="AttachStatus" VerticalAlignment="Center" Margin="20,0,0,0"
+                           Foreground="{StaticResource TextMutedBrush}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 主内容区 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧：内存区域 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanel}" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="内存区域" Style="{StaticResource SectionTitle}" Margin="0,0,0,10"/>
+                    <DataGrid Grid.Row="1" x:Name="MemoryRegionGrid" AutoGenerateColumns="False"
+                              SelectionChanged="Region_Selected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="基址" Binding="{Binding BaseAddress, StringFormat='X'}" Width="120"/>
+                            <DataGridTextColumn Header="大小" Binding="{Binding RegionSize, StringFormat='X'}" Width="100"/>
+                            <DataGridTextColumn Header="保护" Binding="{Binding Protect, StringFormat='X'}" Width="80"/>
+                            <DataGridTextColumn Header="状态" Binding="{Binding State, StringFormat='X'}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- 右侧：搜索与结果 -->
+            <Border Grid.Column="2" Style="{StaticResource CardPanel}" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="内存搜索" Style="{StaticResource SectionTitle}" Margin="0,0,0,10"/>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <ComboBox x:Name="ValueTypeSelector" Width="100">
+                            <ComboBoxItem Content="Byte"/>
+                            <ComboBoxItem Content="Int16"/>
+                            <ComboBoxItem Content="Int32" IsSelected="True"/>
+                            <ComboBoxItem Content="Int64"/>
+                            <ComboBoxItem Content="Float"/>
+                            <ComboBoxItem Content="Double"/>
+                            <ComboBoxItem Content="String"/>
+                        </ComboBox>
+                        <TextBox x:Name="SearchValueBox" Width="150" Margin="6,0,0,0" 
+                                 VerticalContentAlignment="Center"/>
+                        <Button Content="搜索" Style="{StaticResource AccentButton}" Click="Search_Click" Margin="6,0,0,0"/>
+                        <Button Content="锁定" Style="{StaticResource ToolButton}" Click="Lock_Click" Margin="6,0,0,0"/>
+                        <Button Content="解锁" Style="{StaticResource ToolButton}" Click="Unlock_Click" Margin="6,0,0,0"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" x:Name="SearchResultGrid" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="地址" Binding="{Binding Address, StringFormat='X'}" Width="120"/>
+                            <DataGridTextColumn Header="当前值" Binding="{Binding CurrentValue}" Width="*"/>
+                            <DataGridCheckBoxColumn Header="锁定" Binding="{Binding IsLocked}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Grid.Row="3" x:Name="ResultCountText" Margin="0,10,0,0"
+                               Foreground="{StaticResource TextMutedBrush}" FontSize="12"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 状态栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanel}" Margin="0,10,0,0" Padding="10">
+            <TextBlock x:Name="StatusText" Style="{StaticResource StatusText}" Text="未附加进程"/>
+        </Border>
+    </Grid>
+</UserControl>

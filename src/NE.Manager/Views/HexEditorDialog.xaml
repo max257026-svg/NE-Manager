@@ -1,0 +1,45 @@
+<Window x:Class="NEManager.App.Views.HexEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="十六进制编辑器" Height="560" Width="920"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize"
+        Background="{StaticResource BgBrush}" Foreground="{StaticResource TextBrush}">
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部信息条 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock x:Name="FileInfoText" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+        </StackPanel>
+
+        <!-- Hex 显示区（只读，参考） -->
+        <GroupBox Grid.Row="1" Header="Hex Dump（前 64KB，只读参考）" Foreground="{StaticResource TextSecondaryBrush}" BorderBrush="{StaticResource BorderBrush}">
+            <TextBox x:Name="HexDumpBox" IsReadOnly="True" FontFamily="Consolas" FontSize="11"
+                     Foreground="{StaticResource TextBrush}" Background="{StaticResource BgElevatedBrush}"
+                     BorderThickness="0" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
+        </GroupBox>
+
+        <!-- Patch 输入 -->
+        <GroupBox Grid.Row="2" Header="Patch 写入（格式：偏移 十六进制字节，如 0x100 90 90 90）" Foreground="{StaticResource TextSecondaryBrush}" BorderBrush="{StaticResource BorderBrush}" Margin="0,8,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="PatchInput" Grid.Column="0" AcceptsReturn="True" Height="80" FontFamily="Consolas" FontSize="12"
+                         KeyDown="PatchInput_KeyDown"/>
+                <Button Grid.Column="1" Content="应用 Patch" Style="{StaticResource AccentButton}" Padding="14,8" Margin="8,0,0,0" Click="ApplyPatch_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- 底部按钮 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="关闭" Style="{StaticResource ToolButton}" Padding="14,7" Click="Close_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
